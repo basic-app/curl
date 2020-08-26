@@ -9,6 +9,6 @@ namespace BasicApp\Curl\Config;
 class Curl extends \CodeIgniter\Config\BaseConfig
 {
 
-    public $options = [];
+    public $opt = [];
 
 }

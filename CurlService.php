@@ -22,8 +22,12 @@ class CurlService
 
     public function __construct(CurlConfig $config)
     {
-        foreach($config->options as $key => $value)
+        $constants = get_defined_constants(true);
+
+        foreach($config->opt as $key => $value)
         {
+            $key = $constants['curl']['CURLOPT_' . strtoupper($key)];
+
             if ($value === null)
             {
                 if (array_key_exists($key, $this->_options))
