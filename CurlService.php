@@ -20,14 +20,15 @@ class CurlService
         CURLOPT_SSL_VERIFYHOST => false
     ];
 
+    public function getOptions() : array
+    {
+        return $this->_options;
+    }
+
     public function __construct(CurlConfig $config)
     {
-        $constants = get_defined_constants(true);
-
-        foreach($config->opt as $key => $value)
+        foreach(get_object_vars($config) as $key => $value)
         {
-            $key = $constants['curl']['CURLOPT_' . strtoupper($key)];
-
             if ($value === null)
             {
                 if (array_key_exists($key, $this->_options))
@@ -46,7 +47,7 @@ class CurlService
     {
         $ch = curl_init($url);
 
-        $opt_array = $this->_options;
+        $opt_array = $this->getOptions();
 
         foreach($options as $key => $value)
         {
