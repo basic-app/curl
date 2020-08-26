@@ -6,11 +6,14 @@
  */
 namespace BasicApp\Curl;
 
-use Exception;
 use BasicApp\Curl\Config\Curl as CurlConfig;
 
 class CurlService
 {
+
+    protected $_result;
+
+    protected $_info = [];
 
     protected $_options = [
         CURLOPT_HEADER => false,
@@ -23,6 +26,16 @@ class CurlService
     public function getOptions() : array
     {
         return $this->_options;
+    }
+
+    public function getInfo() : array
+    {
+        return $this->_info;
+    }
+
+    public function getResult()
+    {
+        return $this->_result;
     }
 
     public function __construct(CurlConfig $config)
@@ -66,30 +79,42 @@ class CurlService
 
         curl_setopt_array($ch, $opt_array);
 
-        $result = curl_exec($ch);
+        $this->_result = curl_exec($ch);
 
-        if ($result === false)
+        $this->_info = curl_info($ch);
+
+        if ($this->_result === false)
         {
             $error = curl_error($ch);
         }
 
         curl_close($ch);
 
-        if ($result === false)
+        if ($this->_result === false)
         {
-            throw new Exception($error);
+            throw new CurlException($error);
         }
 
         return $result;
     }
 
-    public function download($url, $file, array $options = [])
+    public function download($url, $file, bool $overwrite = true, array $options = [])
     {
+        if (!$overwrite)
+        {
+            clearstatcache();
+
+            if (is_file($file))
+            {
+                return;
+            }
+        }
+
         $fp = fopen($file, "w");
 
         if ($fp === false)
         {
-            throw new Exception('Can\'t open file to write: ' . $file);
+            throw new CurlException('Can\'t open file to write: ' . $file);
         }
 
         $options[CURLOPT_FILE] = $fp;
@@ -98,7 +123,7 @@ class CurlService
 
         if (fclose($fp) === false)
         {
-            throw new Exception('Can\'t close file: ' . $file);
+            throw new CurlException('Can\'t close file: ' . $file);
         }
 
         return $result;
