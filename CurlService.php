@@ -95,7 +95,7 @@ class CurlService
             throw new CurlException($error);
         }
 
-        return $result;
+        return $this->_result;
     }
 
     public function download($url, $file, bool $overwrite = true, array $options = [])
