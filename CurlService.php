@@ -40,16 +40,20 @@ class CurlService
 
     public function __construct(CurlConfig $config)
     {
+        $constants = get_defined_constants(true);
+
         foreach(get_object_vars($config) as $key => $value)
         {
-            if ($value === null)
+            if (array_key_exists($key, $constants['curl']) == false)
             {
-                if (array_key_exists($key, $this->_options))
-                {
-                    unset($this->_options[$key]);
-                }
+                throw new CurlException('{CURLOPT} is incorrect.', [
+                    'CURLOPT' => $key
+                ]);
             }
-            else
+
+            $key = $constants['curl'][$key];
+
+            if ($value !== null)
             {
                 $this->_options[$key] = $value;
             }
@@ -60,7 +64,7 @@ class CurlService
     {
         $ch = curl_init($url);
 
-        $opt_array = $this->getOptions();
+        $opt_array = $this->getOptions();       
 
         foreach($options as $key => $value)
         {
@@ -81,7 +85,7 @@ class CurlService
 
         $this->_result = curl_exec($ch);
 
-        $this->_info = curl_info($ch);
+        $this->_info = curl_getinfo($ch);
 
         if ($this->_result === false)
         {
@@ -95,7 +99,7 @@ class CurlService
             throw new CurlException($error);
         }
 
-        return $result;
+        return $this->_result;
     }
 
     public function download($url, $file, bool $overwrite = true, array $options = [])
