@@ -33,6 +33,11 @@ class CurlService
         return $this->_info;
     }
 
+    public function getCode() : int
+    {
+        return $this->getInfo()['http_code'];
+    }
+
     public function getResult()
     {
         return $this->_result;
@@ -128,6 +133,11 @@ class CurlService
         if (fclose($fp) === false)
         {
             throw new CurlException('Can\'t close file: ' . $file);
+        }
+
+        if ($this->getCode() !== 200)
+        {
+            throw new CurlException('HTTP code: ' . $this->getCode());
         }
 
         return $result;
