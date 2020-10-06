@@ -8,7 +8,7 @@ namespace BasicApp\Curl;
 
 use BasicApp\Curl\Config\Curl as CurlConfig;
 
-class CurlService
+class CurlService extends \BasicApp\Service\BaseService
 {
 
     protected $_result;

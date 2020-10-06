@@ -5,5 +5,8 @@
         "psr-4": {
             "BasicApp\\Curl\\" : ""
         }
+    },
+    "require": {
+        "basic-app/service": "*"
     }
 }
