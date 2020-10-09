@@ -108,18 +108,8 @@ class CurlService extends \BasicApp\Service\BaseService
         return $this->_result;
     }
 
-    public function download($url, $file, bool $overwrite = true, array $options = [])
+    public function download($url, $file, array $options = [])
     {
-        if (!$overwrite)
-        {
-            clearstatcache();
-
-            if (is_file($file))
-            {
-                return;
-            }
-        }
-
         $fp = fopen($file, "w");
 
         if ($fp === false)
