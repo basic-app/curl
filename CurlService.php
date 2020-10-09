@@ -6,6 +6,7 @@
  */
 namespace BasicApp\Curl;
 
+use Exception;
 use BasicApp\Curl\Config\Curl as CurlConfig;
 
 class CurlService extends \BasicApp\Service\BaseService
@@ -128,7 +129,18 @@ class CurlService extends \BasicApp\Service\BaseService
 
         $options[CURLOPT_FILE] = $fp;
 
-        $result = $this->query($url, $options);
+        try
+        {
+            $result = $this->query($url, $options);
+        }
+        catch(Exception $e)
+        {
+            fclose($fp);
+            
+            unlink($file);
+
+            throw new CurlException($e->getMessage());
+        }
 
         if (fclose($fp) === false)
         {
